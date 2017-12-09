@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,8 +24,21 @@ namespace WpfApplication1
         public MainWindow()
         {
             InitializeComponent();
+            MysqlCon c = new MysqlCon();
+            MySqlConnection con = c.getConnection();
+            con.Open();
+
+            string c1 = @"SELECT 
+                Code, HomeTeamName as HomeTeam, AwayTeamName as AwayTeam, TypeName as Type, RunnerType as Runner, BackPrice, StartsTime
+                FROM vOdds
+                WHERE StartsTime > now() AND StartsTime< (now() + INTERVAL 3 Day) AND Bookmaker = 1
+                ORDER BY StartsTime ASC;";
+
+            MySqlDataAdapter mySqlDataAdapter = new MySqlDataAdapter(c1, con);
+            System.Data.DataTable DT = new System.Data.DataTable();
+            mySqlDataAdapter.Fill(DT);
+            dataGrid1.ItemsSource = DT.DefaultView;
         }
-
-
+        
     }
 }
